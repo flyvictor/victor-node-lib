@@ -3,7 +3,7 @@ var path = require('path');
 
 var existsSync = fs.existsSync || path.existsSync;
 
-var projectPath = path.resolve(__dirname, '../../');
+var projectPath = path.resolve(__dirname, '../../../');
 var packagePath = path.join(projectPath, 'package.json');
 var projectName = path.basename(projectPath);
 var filePath = path.join(__dirname, 'files');
