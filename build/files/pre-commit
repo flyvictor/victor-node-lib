@@ -29,8 +29,8 @@ function runJshint(path, config, myconfig) {
         }
     }
     if (!cmd) {
-        if (exists('./node_modules/precommit-hook/node_modules/.bin/jshint')) {
-            cmd = '"./node_modules/precommit-hook/node_modules/.bin/jshint" .';
+        if (exists('./node_modules/victor-node-lib/node_modules/.bin/jshint')) {
+            cmd = '"./node_modules/victor-node-lib/node_modules/.bin/jshint" .';
         } else if (exists('./node_modules/.bin/jshint')) {
             cmd = '"./node_modules/.bin/jshint" .';
         } else {
