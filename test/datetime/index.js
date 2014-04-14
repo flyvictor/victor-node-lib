@@ -14,12 +14,11 @@ describe("Date/time logic", function() {
     should.not.exist(datetime.toObject(moment("blah").toDate()));
   });
 
-  /*
   it("should return a correct object when convert a valid date with time to an object", function() {
     var date = datetime.toObject(moment("2014-02-10T06:21Z").toDate());
     date.date.should.equal("2014-02-10");
     date.time.should.equal("06:21");
-    date.timeZone.should.equal(moment().zone());
+    date.timeZone.should.equal(0);
   });
 
   it("should return a correct object with timezone offset when converting a date to an object", function() {
@@ -30,9 +29,8 @@ describe("Date/time logic", function() {
 
     date.date.should.equal("2014-02-10");
     date.time.should.equal("06:21");
-    date.timeZone.should.equal(120);
+    date.timeZone.should.equal(0);
   });
-  */
 
   it("should return a null date when attempting to convert null into a javascript date", function() {
     should.not.exist(datetime.toDate(null));
