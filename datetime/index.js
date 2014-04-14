@@ -6,6 +6,7 @@ function toObject(date) {
   var m = moment(date);
   if (date && m.isValid()) {
     // Remove time zone from moment date to get correct time format with HH:mm
+    m.zone(0);
     return {
       date: m.format("YYYY-MM-DD"),
       time: m.format("HH:mm"),
