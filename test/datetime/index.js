@@ -108,5 +108,20 @@ describe("Date/time logic", function() {
     });
   });
 
+  describe("date conversion", function () {
+    
+    it("should return expected arrival time", function () {
+      var depDateTime = moment("2014-02-10T14:00Z").toDate();
+      var durationInMinutes = 60;
+      var arrivalTimeZone = "Europe/Paris";
+
+      var arrival = datetime.calculateArrival(depDateTime, durationInMinutes, arrivalTimeZone);
+
+      arrival.date.should.equal("2014-02-10");
+      arrival.time.should.equal("15:00");
+      arrival.timeZone.should.equal(0);
+    });
+
+  });
 
 });
