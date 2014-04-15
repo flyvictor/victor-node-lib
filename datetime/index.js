@@ -15,13 +15,31 @@ function toObject(date) {
   }
 }
 
+function toObjectWithoutTime(date) {
+  var m = moment(date);
+  if (date && m.isValid()) {
+    return {
+      date: m.format("YYYY-MM-DD")
+    };
+  }
+}
+
 function toDate(obj) {
   if (obj && obj.date) {
-    var m = moment(obj.date+"T"+obj.time+"Z").zone(obj.timeZone+moment().zone());
+    var time = !obj.time ? "00:00": obj.time;
+    var m = moment(obj.date + "T" + time + "Z").zone(obj.timeZone+moment().zone());
     if (m.isValid())
       return moment(m.format("YYYY-MM-DDTHH:mm:ssZ")).toDate();
   }
 }
 
+function isDateObject(obj){
+  if(!obj) return false;
+  var result = toDate(obj);
+  return !!result;
+}
+
+module.exports.toObjectWithoutTime = toObjectWithoutTime;
+module.exports.isDateObject = isDateObject;
 module.exports.toObject = toObject;
 module.exports.toDate = toDate;
