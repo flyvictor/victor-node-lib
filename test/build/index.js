@@ -1,6 +1,7 @@
 var install = require("../../build/install"),
     fs = require("fs"),
-    path = require("path");
+    path = require("path"),
+    proc = require("child_process");
 
 module.exports = function (util) {
 
@@ -19,7 +20,7 @@ module.exports = function (util) {
       util.sandbox.stub(path, "join");
       util.sandbox.stub(path, "dirname");
       util.sandbox.stub(console, "error");
-
+      util.sandbox.stub(proc, "exec");
       path.join.withArgs(dirName, "files").returns("file-path");
       path.join.withArgs(projectPath, ".git").returns("git-path");
       path.join.withArgs("git-path", "hooks", "pre-commit").returns("pre-commit-path");
@@ -54,9 +55,22 @@ module.exports = function (util) {
       fs.writeFileSync.withArgs("post-checkout-path", "post-data");
       fs.chmodSync.withArgs("pre-commit-path", "755");
       fs.chmodSync.withArgs("post-checkout-path", "755");
-    
+      
+      var config = {
+        "victorConfig": {
+          "precommit": {
+            "lint": true
+          },
+          "postcheckout" : {
+            "script" : "./hooks/checkout-submodules"
+          }
+        }
+      };
+
+      proc.exec.yields(null, "std out", "no error");
+
       // Act
-      install.init(dirName, projectPath);
+      install.init(dirName, projectPath, config);
 
       // Assert
       fs.lstatSync.withArgs("git-path").should.have.callCount(1);
@@ -70,6 +84,7 @@ module.exports = function (util) {
       fs.writeFileSync.withArgs("post-checkout-path", "post-data").should.have.callCount(1);
       fs.chmodSync.withArgs("pre-commit-path", "755").should.have.callCount(1);
       fs.chmodSync.withArgs("post-checkout-path", "755").should.have.callCount(1);
+      proc.exec.should.have.callCount(1);
     });
 
     it("should not register hooks if git directory doesn't exist", function () {

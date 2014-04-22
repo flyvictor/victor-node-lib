@@ -1,19 +1,17 @@
 var fs = require("fs");
 var path = require("path");
-var exec = require("child_process").exec;
+var proc = require("child_process");
 var fail = "\x1B[31mfailed!\x1B[39m";
 var ok = "\x1B[32mok\x1B[39m";
 
-function autoExec(path) {
-  var config = require(path + "/package.json"),
-  myconfig = config.config && config.config.auto ? config.config.auto : undefined;
+function autoExec(packageJson, projectPath) {
+  var postCheckoutConfig = packageJson.victorConfig && packageJson.victorConfig.postcheckout ? packageJson.victorConfig.postcheckout : undefined;
 
-  if (myconfig && myconfig.hasOwnProperty("script")) {
+  if (postCheckoutConfig && postCheckoutConfig.hasOwnProperty("script")) {
 
-    if (myconfig.script && myconfig.script !== true) {
-      var cmd = myconfig.script;
-      console.log(cmd);
-      exec(cmd, { cwd: path }, function (err, stdout, stderr) {
+    if (postCheckoutConfig.script) {
+      var cmd = postCheckoutConfig.script;
+      proc.exec(cmd, { cwd: projectPath }, function (err, stdout, stderr) {
         if (err) {
           console.log("auto hook: " + fail);
           console.log(stdout);
@@ -42,7 +40,7 @@ function addHook(filePath, hookPath, hookName) {
   fs.chmodSync(hookPath, "755");
 }
 
-module.exports.init = function (dirName, projectPath) {
+module.exports.init = function (dirName, projectPath, packageJson) {
   
   var filePath = path.join(dirName, "files");
   var gitPath = path.join(projectPath, ".git");
@@ -57,7 +55,7 @@ module.exports.init = function (dirName, projectPath) {
       addHook(filePath, postCheckoutPath, "post-checkout");
 
       // exectute file
-      autoExec(projectPath);
+      autoExec(packageJson, projectPath);
     }
   } else {
     console.error("This project doesn\'t appear to be a git repository.");

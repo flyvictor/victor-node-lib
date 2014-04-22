@@ -1,5 +1,6 @@
-var install = require("./install");
-var path = require("path");
-var projectPath = path.resolve(__dirname, "../../../");
+var install = require("./install"),
+    path = require("path"),
+    projectPath = path.resolve(__dirname, "../../../"),
+    packageJson = require(projectPath + "/package.json");
 
-install.init(__dirname, projectPath);
+install.init(__dirname, projectPath, packageJson);
