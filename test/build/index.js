@@ -9,6 +9,20 @@ module.exports = function (util) {
 
     var dirName = "./dir";
     var projectPath = "./project";
+    var setupMocks = function () {
+      fs.existsSync.withArgs("git-path").returns(true);
+      fs.existsSync.withArgs("pre-commit-path").returns(true);
+      fs.existsSync.withArgs("post-checkout-path").returns(true);
+      fs.lstatSync.withArgs("git-path").returns({ isDirectory: function () { return true; } });
+      path.join.withArgs("file-path", "pre-commit").returns("file-path/pre-commit-path");
+      path.join.withArgs("file-path", "post-checkout").returns("file-path/post-checkout-path");
+      fs.readFileSync.withArgs("file-path/pre-commit-path").returns("pre-data");
+      fs.readFileSync.withArgs("file-path/post-checkout-path").returns("post-data");
+      fs.writeFileSync.withArgs("pre-commit-path", "pre-data");
+      fs.writeFileSync.withArgs("post-checkout-path", "post-data");
+      fs.chmodSync.withArgs("pre-commit-path", "755");
+      fs.chmodSync.withArgs("post-checkout-path", "755");
+    };
 
     beforeEach(function(){
       util.sandbox.stub(fs, "existsSync");
@@ -43,18 +57,7 @@ module.exports = function (util) {
 
     it("should register hooks if git directory exists", function () {
       // Arrange
-      fs.existsSync.withArgs("git-path").returns(true);
-      fs.existsSync.withArgs("pre-commit-path").returns(true);
-      fs.existsSync.withArgs("post-checkout-path").returns(true);
-      fs.lstatSync.withArgs("git-path").returns({ isDirectory: function () { return true; } });
-      path.join.withArgs("file-path", "pre-commit").returns("file-path/pre-commit-path");
-      path.join.withArgs("file-path", "post-checkout").returns("file-path/post-checkout-path");
-      fs.readFileSync.withArgs("file-path/pre-commit-path").returns("pre-data");
-      fs.readFileSync.withArgs("file-path/post-checkout-path").returns("post-data");
-      fs.writeFileSync.withArgs("pre-commit-path", "pre-data");
-      fs.writeFileSync.withArgs("post-checkout-path", "post-data");
-      fs.chmodSync.withArgs("pre-commit-path", "755");
-      fs.chmodSync.withArgs("post-checkout-path", "755");
+      setupMocks();
       
       var config = {
         "victorConfig": {
@@ -62,7 +65,7 @@ module.exports = function (util) {
             "lint": true
           },
           "postcheckout" : {
-            "script" : "./hooks/checkout-submodules"
+            "script" : ""
           }
         }
       };
@@ -84,6 +87,30 @@ module.exports = function (util) {
       fs.writeFileSync.withArgs("post-checkout-path", "post-data").should.have.callCount(1);
       fs.chmodSync.withArgs("pre-commit-path", "755").should.have.callCount(1);
       fs.chmodSync.withArgs("post-checkout-path", "755").should.have.callCount(1);
+      proc.exec.should.have.callCount(0);
+    });
+
+    it("should auto-execute post checkout script", function () {
+      // Arrange
+      setupMocks();
+      
+      var config = {
+        "victorConfig": {
+          "precommit": {
+            "lint": true
+          },
+          "postcheckout" : {
+            "script" : "./hooks/post-checkout"
+          }
+        }
+      };
+
+      proc.exec.yields(null, "std out", "no error");
+
+      // Act
+      install.init(dirName, projectPath, config);
+
+      // Assert
       proc.exec.should.have.callCount(1);
     });
 
