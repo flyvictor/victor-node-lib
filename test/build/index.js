@@ -9,6 +9,7 @@ module.exports = function (util) {
 
     var dirName = "./dir";
     var projectPath = "./project";
+
     var setupMocks = function () {
       fs.existsSync.withArgs("git-path").returns(true);
       fs.existsSync.withArgs("pre-commit-path").returns(true);
@@ -35,6 +36,7 @@ module.exports = function (util) {
       util.sandbox.stub(path, "dirname");
       util.sandbox.stub(console, "error");
       util.sandbox.stub(proc, "exec");
+      util.sandbox.stub(process, "exit");
       path.join.withArgs(dirName, "files").returns("file-path");
       path.join.withArgs(projectPath, ".git").returns("git-path");
       path.join.withArgs("git-path", "hooks", "pre-commit").returns("pre-commit-path");
@@ -61,9 +63,6 @@ module.exports = function (util) {
       
       var config = {
         "victorConfig": {
-          "precommit": {
-            "lint": true
-          },
           "postcheckout" : {
             "script" : ""
           }
@@ -96,22 +95,74 @@ module.exports = function (util) {
       
       var config = {
         "victorConfig": {
-          "precommit": {
-            "lint": true
-          },
           "postcheckout" : {
             "script" : "./hooks/post-checkout"
           }
         }
       };
 
-      proc.exec.yields(null, "std out", "no error");
+      proc.exec.yields(null, "std out");
 
       // Act
       install.init(dirName, projectPath, config);
 
       // Assert
       proc.exec.should.have.callCount(1);
+    });
+
+    it("should exit process for auto-execute post checkout script", function () {
+      // Arrange
+      setupMocks();
+      
+      var config = {
+        "victorConfig": {
+          "postcheckout" : {
+            "script" : "./hooks/post-checkout"
+          }
+        }
+      };
+
+      proc.exec.yields(true, "std out", "error details");
+
+      // Act
+      install.init(dirName, projectPath, config);
+
+      // Assert
+      proc.exec.should.have.callCount(1);
+      process.exit.should.be.calledWith(1);
+    });
+
+    it("should not auto-execute post checkout script if post checkout config is mising", function () {
+      // Arrange
+      setupMocks();
+      
+      var config = {
+        "victorConfig": {
+        }
+      };
+
+      proc.exec.yields(null, "std out");
+
+      // Act
+      install.init(dirName, projectPath, config);
+
+      // Assert
+      proc.exec.should.have.callCount(0);
+    });
+
+    it("should not auto-execute post checkout script if victor config is mising", function () {
+      // Arrange
+      setupMocks();
+      
+      var config = {};
+
+      proc.exec.yields(null, "std out");
+
+      // Act
+      install.init(dirName, projectPath, config);
+
+      // Assert
+      proc.exec.should.have.callCount(0);
     });
 
     it("should not register hooks if git directory doesn't exist", function () {
