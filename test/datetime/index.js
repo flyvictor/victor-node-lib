@@ -107,38 +107,86 @@ module.exports = function (util) {
       });
     });
 
-    /*
     describe("date conversion", function () {
       
       it("should return expected arrival time when not crossing timezone", function () {
-        var depDateTime = moment("2014-02-10T11:55");
 
-        var durationInMinutes = 45;
-        var departureTimeZone = "Europe/London";
-        var arrivalTimeZone = "Europe/London";
-        var arrival = datetime.calculateArrival(departureTimeZone, depDateTime, durationInMinutes, arrivalTimeZone);
+        var arrival = datetime.calculateArrival(
+          "Europe/London",
+          "2014-01-20T08:00",
+          60,
+          "Europe/London");
 
-        arrival.date.should.equal("2014-02-10");
-        arrival.time.should.equal("12:40");
+        arrival.date.should.equal("2014-01-20");
+        arrival.time.should.equal("09:00");
         arrival.timeZone.should.equal(0);
       });
     
-      it("should return expected arrival time when crossing timezone", function () {
-        var depDateTime = moment("2014-02-10T11:55");
+      it("should return expected arrival time +1 hour when crossing positive timezone", function () {
 
-        var durationInMinutes = 45;
-        var departureTimeZone = "Europe/Paris";
-        var arrivalTimeZone = "Europe/Paris";
-
-        var arrival = datetime.calculateArrival(departureTimeZone, depDateTime, durationInMinutes, arrivalTimeZone);
+        var arrival = datetime.calculateArrival(
+          "Europe/London",
+          "2014-02-10T08:00",
+          60,
+          "Europe/Paris");
 
         arrival.date.should.equal("2014-02-10");
-        //arrival.time.should.equal("11:40");
-        arrival.timeZone.should.equal(-60);
+        arrival.time.should.equal("10:00");
+        arrival.timeZone.should.equal(-1);
       });
 
+      it("should return expected arrival time -1 hour when crossing negative timezone", function () {
+
+        var arrival = datetime.calculateArrival(
+          "Europe/Paris",
+          "2014-02-10T08:00",
+          60,
+          "Europe/London");
+
+        arrival.date.should.equal("2014-02-10");
+        arrival.time.should.equal("08:00");
+        arrival.timeZone.should.equal(0);
+      });
+
+      it("should return expected arrival time when crossing BST", function () {
+
+        var arrival = datetime.calculateArrival(
+          "Europe/London",
+          "2014-03-30T00:30",
+          45,
+          "Europe/London");
+
+        arrival.date.should.equal("2014-03-30");
+        arrival.time.should.equal("02:15");
+        arrival.timeZone.should.equal(-1);
+      });
+
+      it("should return expected arrival date and time when crossing timezone for same day arrival", function () {
+
+        var arrival = datetime.calculateArrival(
+          "Europe/London",
+          "2014-01-01T18:50",
+          450,
+          "America/New_York");
+
+        arrival.date.should.equal("2014-01-01");
+        arrival.time.should.equal("21:20");
+        arrival.timeZone.should.equal(5);
+      });
+
+      it("should return expected arrival date and time when crossing timezone for next day arrival", function () {
+
+        var arrival = datetime.calculateArrival(
+          "Europe/London",
+          "2014-01-01T19:00",
+          475,
+          "Asia/Chongqing");
+
+        arrival.date.should.equal("2014-01-02");
+        arrival.time.should.equal("10:55");
+        arrival.timeZone.should.equal(-8);
+      });
     });
-    */
 
   });
 
