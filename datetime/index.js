@@ -3,18 +3,24 @@ var moment = require("moment-timezone");
 /**
  * Calculates an arrival time based on dep date, duration and target time zone.
  *
+ * @param {String} Departure time zone in IANA code format.
  * @param {Date} Departure date & time.
  * @param {Number} Duration of travel in minutes.
  * @param {String} Arrival time zone in IANA code format.
  * @return {Date} FlyVictor date object with arrival date and time info.
  * @api public
  */
-function calculateArrival(depDateTime, durationInMinutes, arrivalTimeZone) {
-  var m = moment.tz(depDateTime, arrivalTimeZone);
+function calculateArrival(departureTimeZone, depDateTime, durationInMinutes, arrivalTimeZone) {
+  var departure = moment.tz(depDateTime, departureTimeZone);
+  console.log(departure.format());
+  //console.log(departure.format());
+  //TODO: add hours to departure time
+  var arrival = moment.tz(departure, arrivalTimeZone);
+  arrival.add("m", durationInMinutes);
   return {
-    date: m.format("YYYY-MM-DD"),
-    time: m.format("HH:mm"),
-    timeZone: 0
+    date: arrival.format("YYYY-MM-DD"),
+    time: arrival.format("HH:mm"),
+    timeZone: arrival.zone()
   };
 }
 
@@ -65,7 +71,7 @@ function toObjectWithoutTime(date) {
 function toDate(obj) {
   if (obj && obj.date) {
     var time = !obj.time ? "00:00": obj.time;
-    var m = moment(obj.date + "T" + time + "Z").zone(obj.timeZone+moment().zone());
+    var m = moment(new Date(obj.date + "T" + time + "Z")).zone(obj.timeZone+moment().zone());
     if (m.isValid())
       return moment(m.format("YYYY-MM-DDTHH:mm:ssZ")).toDate();
   }
