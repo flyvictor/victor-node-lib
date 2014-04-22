@@ -12,6 +12,7 @@ describe("victor-node-lib", function(){
   });
 
   util.requireSpecs([
-    "./datetime"
+    "./datetime",
+    "./build"
   ]);
 });
