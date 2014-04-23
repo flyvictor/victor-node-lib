@@ -10,11 +10,20 @@
   },
   "dependencies": {
     "jshint": "~2.3.0",
-    "moment": "2.5.0"
+    "moment": "2.6.0",
+    "moment-timezone": "0.0.3"
   },
-  "devDependencies": {  
+  "devDependencies": {
     "chai": "~1.9.0",
     "istanbul": "~0.2.4",
-    "mocha": "~1.17.1"
+    "mocha": "~1.17.1",
+    "chai-as-promised": "~4.1.1",
+    "sinon": "~1.9.1",
+    "sinon-chai": "~2.5.0"
+  },
+  "config": {
+    "precommit": {
+      "lint": true
+    }
   }
 }
