@@ -2,7 +2,7 @@
   "author": "flyvictor",
   "name": "victor-node-lib",
   "description": "flyvictor",
-  "version": "0.0.1",
+  "version": "0.0.7",
   "scripts": {
     "install": "node build/install.js",
     "test": "node_modules/mocha/bin/mocha --recursive",
