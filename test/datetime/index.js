@@ -132,7 +132,7 @@ module.exports = function (util) {
 
         arrival.date.should.equal("2014-02-10");
         arrival.time.should.equal("10:00");
-        arrival.timeZone.should.equal(-1);
+        arrival.timeZone.should.equal(-60);
       });
 
       it("should return expected arrival time -1 hour when crossing negative timezone", function () {
@@ -158,7 +158,7 @@ module.exports = function (util) {
 
         arrival.date.should.equal("2014-03-30");
         arrival.time.should.equal("02:15");
-        arrival.timeZone.should.equal(-1);
+        arrival.timeZone.should.equal(-60);
       });
 
       it("should return expected arrival date and time when crossing timezone for same day arrival", function () {
@@ -171,7 +171,7 @@ module.exports = function (util) {
 
         arrival.date.should.equal("2014-01-01");
         arrival.time.should.equal("21:20");
-        arrival.timeZone.should.equal(5);
+        arrival.timeZone.should.equal(300);
       });
 
       it("should return expected arrival date and time when crossing timezone for next day arrival", function () {
@@ -184,7 +184,7 @@ module.exports = function (util) {
 
         arrival.date.should.equal("2014-01-02");
         arrival.time.should.equal("10:55");
-        arrival.timeZone.should.equal(-8);
+        arrival.timeZone.should.equal(-480);
       });
     });
 

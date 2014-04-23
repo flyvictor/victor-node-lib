@@ -19,7 +19,7 @@ function calculateArrival(departureTimeZone, depDateTime, durationInMinutes, arr
   return {
     date: arrival.format("YYYY-MM-DD"),
     time: arrival.format("HH:mm"),
-    timeZone: arrival.zone() / 60
+    timeZone: arrival.zone()
   };
 }
 
