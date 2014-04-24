@@ -186,6 +186,97 @@ module.exports = function (util) {
         arrival.time.should.equal("10:55");
         arrival.timeZone.should.equal(-480);
       });
+
+      it("should return default date for invalid departure time zone", function () {
+
+        var arrival = datetime.calculateArrival(
+          undefined,
+          "2014-01-01T19:00Z",
+          475,
+          "Asia/Chongqing");
+
+        arrival.date.should.equal("1900-01-01");
+        arrival.time.should.equal("00:00");
+        arrival.timeZone.should.equal(0);
+      });
+
+      it("should return default date for invalid departure datetime", function () {
+
+        var arrival = datetime.calculateArrival(
+          "Europe/London",
+          undefined,
+          475,
+          "Asia/Chongqing");
+
+        arrival.date.should.equal("1900-01-01");
+        arrival.time.should.equal("00:00");
+        arrival.timeZone.should.equal(0);
+      });
+
+      it("should return default date for invalid duration", function () {
+
+        var arrival = datetime.calculateArrival(
+          "Europe/London",
+          "2014-01-01T19:00",
+          undefined,
+          "Asia/Chongqing");
+
+        arrival.date.should.equal("1900-01-01");
+        arrival.time.should.equal("00:00");
+        arrival.timeZone.should.equal(0);
+      });
+
+      it("should return default date for invalid arrival timezone", function () {
+
+        var arrival = datetime.calculateArrival(
+          "Europe/London",
+          "2014-01-01T19:00",
+          475,
+          undefined);
+
+        arrival.date.should.equal("1900-01-01");
+        arrival.time.should.equal("00:00");
+        arrival.timeZone.should.equal(0);
+      });
+
+      it("should return default date for non existent departure timezone", function () {
+
+        var arrival = datetime.calculateArrival(
+          "Hello",
+          "2014-01-01T19:00",
+          475,
+          "Asia/Chongqing");
+
+        arrival.date.should.equal("1900-01-01");
+        arrival.time.should.equal("00:00");
+        arrival.timeZone.should.equal(0);
+      });
+
+      it("should return default date for non existent arrival timezone", function () {
+
+        var arrival = datetime.calculateArrival(
+          "Asia/Chongqing",
+          "2014-01-01T19:00",
+          475,
+          "Hello");
+
+        arrival.date.should.equal("1900-01-01");
+        arrival.time.should.equal("00:00");
+        arrival.timeZone.should.equal(0);
+      });
+
+      it("should return default date for bad date", function () {
+
+        var arrival = datetime.calculateArrival(
+          "Asia/Chongqing",
+          "hello",
+          475,
+          "Asia/Chongqing");
+
+        arrival.date.should.equal("1900-01-01");
+        arrival.time.should.equal("00:00");
+        arrival.timeZone.should.equal(0);
+      });
     });
 
   });
