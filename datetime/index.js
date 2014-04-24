@@ -11,15 +11,30 @@ var moment = require("moment-timezone");
  * @api public
  */
 function calculateArrival(departureTimeZone, depDateTime, durationInMinutes, arrivalTimeZone) {
-  var departure = moment.tz(depDateTime, departureTimeZone);
   
-  var arrival = departure.tz(arrivalTimeZone);
-  arrival.add("m", durationInMinutes);
-  
+  var arrival = moment(new Date("1900-01-01T00:00Z"));
+  var timeZone = 0;
+  var time = "00:00";
+
+  if (departureTimeZone && depDateTime && durationInMinutes && arrivalTimeZone) {
+    try {
+      var departure = moment.tz(depDateTime, departureTimeZone);
+      
+      if (departure.format() !== "Invalid date") {
+        arrival = departure.tz(arrivalTimeZone);
+        arrival.add("m", durationInMinutes);
+        timeZone = arrival.zone();
+        time = arrival.format("HH:mm");
+      }
+    } catch (e) {
+      console.warn("invalid timezone");
+    }
+  }
+
   return {
     date: arrival.format("YYYY-MM-DD"),
-    time: arrival.format("HH:mm"),
-    timeZone: arrival.zone()
+    time: time,
+    timeZone: timeZone
   };
 }
 
