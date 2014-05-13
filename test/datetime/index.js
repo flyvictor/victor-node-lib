@@ -10,22 +10,18 @@ module.exports = function (util) {
     });
 
     it("should return undefined when converting an invalid date to an object", function() {
-      util.should.not.exist(datetime.toObject(moment(new Date("blah")).toDate()));
+      util.should.not.exist(datetime.toObject(new Date("blah")));
     });
 
     it("should return a correct object when convert a valid date with time to an object", function() {
-      var date = datetime.toObject(moment(new Date("2014-02-10T06:21Z")).toDate());
+      var date = datetime.toObject(new Date("2014-02-10T06:21Z"));
       date.date.should.equal("2014-02-10");
       date.time.should.equal("06:21");
       date.timeZone.should.equal(0);
     });
 
     it("should return a correct object with timezone offset when converting a date to an object", function() {
-      var m = moment(new Date("2014-02-10T06:21Z"));
-      m.zone(120);
-      
-      var date = datetime.toObject(m);
-
+      var date = datetime.toObject(new Date("2014-02-10T06:21Z"));
       date.date.should.equal("2014-02-10");
       date.time.should.equal("06:21");
       date.timeZone.should.equal(0);
