@@ -1,5 +1,5 @@
-var requestSigning = require("../../request-signing"),
-	Rfc3986 = require("../../request-signing/Rfc3986"),
+var requestSigner = require("../../requestSigner"),
+	Rfc3986 = require("../../requestSigner/Rfc3986"),
 	_ = require("underscore");
 
 module.exports = function () {
@@ -7,8 +7,8 @@ module.exports = function () {
 		var secondRequest = _.clone(firstRequst);
 		secondRequest = _.extend(secondRequest, changeToRequest);
 
-		var firstHash = requestSigning.sign(firstRequst, secret);
-		var secondHash = requestSigning.sign(secondRequest, secret);
+		var firstHash = requestSigner.sign(firstRequst, secret);
+		var secondHash = requestSigner.sign(secondRequest, secret);
 		
 		firstHash.should.not.eql(secondHash);
 	};
@@ -46,39 +46,39 @@ module.exports = function () {
 			});
 
 			it("should generate same hash ignoring authSignature parameter", function(){
-				var firstHash = requestSigning.sign(request, secret);
+				var firstHash = requestSigner.sign(request, secret);
 				request.query.authSignature = "asdasddsad";
-				var secondHash = requestSigning.sign(request, secret);
+				var secondHash = requestSigner.sign(request, secret);
 				
 				firstHash.should.eql(secondHash);
 			});
 		});
 		describe("validating requests", function(){
 			it("should validate a correct signature", function(){
-				var isValid = requestSigning.validateRequest(request, "3BckWpCNwqSGdD9g*nZDN");
+				var isValid = requestSigner.validateRequest(request, "3BckWpCNwqSGdD9g*nZDN");
 				isValid.should.eql(true);
 			});
 		});
 
 		describe("creating base string for encrypting", function(){
 			it("should start with the method name", function(){
-				var baseString = requestSigning.createBaseString(request);
+				var baseString = requestSigner.createBaseString(request);
 				baseString.should.match(/^POST&/);
 			});
 
 			it("should start with the method name uppercased", function(){
 				request.method = "get";
-				var baseString = requestSigning.createBaseString(request);
+				var baseString = requestSigner.createBaseString(request);
 				baseString.should.match(/^GET&/);
 			});
 
 			it("should have the base url encoded", function(){
-				var baseString = requestSigning.createBaseString(request);
+				var baseString = requestSigner.createBaseString(request);
 				baseString.should.match(/POST&https%3A%2F%2Flocalhost%3A3012%2Fsync-something&/);
 			});
 
 			it("should not have any (=) sign as they are all encoded to %3D", function(){
-				var baseString = requestSigning.createBaseString(request);
+				var baseString = requestSigner.createBaseString(request);
 				baseString.search(/=/).should.eql(-1);
 				baseString.search(/%3D/).should.not.eql(-1);
 			});
@@ -88,7 +88,7 @@ module.exports = function () {
 				request.body["ab%c"] = "val ue";
 				request.query.zKey = true;
 
-				var baseString = Rfc3986.decode(Rfc3986.decode(requestSigning.createBaseString(request)));
+				var baseString = Rfc3986.decode(Rfc3986.decode(requestSigner.createBaseString(request)));
 				baseString.should.match(/&ab%c=val ue&anotherKey=anotherValue&authKey=admin-frontend&key=value&zKey=true$/);
 			});
 		});
@@ -114,7 +114,7 @@ module.exports = function () {
 			var secret = "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw&LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE";
 
 			it("should create the base string as specified in the twitter docs", function(){
-				var baseString = requestSigning.createBaseString(request);
+				var baseString = requestSigner.createBaseString(request);
 				baseString.should.match(/POST&https%3A%2F%2Fapi.twitter.com%2F1%2Fstatuses%2Fupdate.json&include_entities%3Dtrue/);
 				baseString.should.match(/%26oauth_consumer_key%3Dxvz1evFS4wEEPTGEFPHBog/);
 				baseString.should.match(/%26oauth_nonce%3DkYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg/);
@@ -126,7 +126,7 @@ module.exports = function () {
 			});
 
 			it("should create the signature as specified in the twitter docs", function(){
-				var signature = requestSigning.sign(request, secret);
+				var signature = requestSigner.sign(request, secret);
 				signature.should.eql("tnnArxj06cWHq44gCs1OSKk/jLY=");
 			});
 		});

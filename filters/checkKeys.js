@@ -1,5 +1,5 @@
 var _ = require("underscore"),
-  requestSigning = require("../request-signing");
+  requestSigner = require("../requestSigner");
 
 var getKey = function(key){
   var keyPairs = process.env.CLIENT_KEYS || "legacy-application:kfJyFWwUB3ZXNr0KC!vRz$;admin-frontend:3BckWpCNwqSGdD9g*nZDN;";
@@ -21,7 +21,7 @@ var checkKeys = function(req, res, next) {
     res.send(401);
   }
   else {
-    var hasValidSignature = requestSigning.validateRequest(req, secret);
+    var hasValidSignature = requestSigner.validateRequest(req, secret);
 
     if(!hasValidSignature){
       console.error("checkKeys request failed key check, rejecting as HTTP 401");
