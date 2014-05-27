@@ -1,6 +1,6 @@
 module.exports.encode = function (decoded) {
 	if (!decoded) {
-		return '';
+		return "";
 	}
 	// using implementation from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent?redirectlocale=en-US&redirectslug=JavaScript%2FReference%2FGlobal_Objects%2FencodeURIComponent
 	return encodeURIComponent(decoded)
@@ -10,7 +10,7 @@ module.exports.encode = function (decoded) {
 
 module.exports.decode = function (encoded) {
 	if (!encoded) {
-		return '';
+		return "";
 	}
 	return decodeURIComponent(encoded);
 };

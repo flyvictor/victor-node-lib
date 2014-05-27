@@ -2,7 +2,7 @@ var requestSigning = require("../../request-signing"),
 	Rfc3986 = require("../../request-signing/Rfc3986"),
 	_ = require("underscore");
 
-module.exports = function (util) {
+module.exports = function () {
 	var expectDifferentHashes = function(firstRequst, changeToRequest, secret){
 		var secondRequest = _.clone(firstRequst);
 		secondRequest = _.extend(secondRequest, changeToRequest);
@@ -15,7 +15,7 @@ module.exports = function (util) {
 
 	describe("Securing Auth Secret", function(){
 		var request;
-		var secret = "random_secret";
+		var secret = "3BckWpCNwqSGdD9g*nZDN";
 
 		beforeEach(function(){
 			request = {
@@ -24,17 +24,17 @@ module.exports = function (util) {
 				body: {key: "value"},
 				method: "POST",
 				path: "/sync-something",
-				query: {"authKey": "legacy-system"}
+				query: {"authKey": "admin-frontend", authSignature : "JssQACBEOA1X7EFXCPMN7Cnx1as="}
 			};
 		});
 
 		describe("sign request", function(){
 			it("should generate different hashes on a different methods", function(){
-				expectDifferentHashes(request, {method: "GET"}, secret)
+				expectDifferentHashes(request, {method: "GET"}, secret);
 			});
 
 			it("should generate different hashes on a different paths", function(){
-				expectDifferentHashes(request, {path: "/do-something-else"}, secret)
+				expectDifferentHashes(request, {path: "/do-something-else"}, secret);
 			});
 
 			it("should generate different hashes on a different query string", function(){
@@ -51,6 +51,12 @@ module.exports = function (util) {
 				var secondHash = requestSigning.sign(request, secret);
 				
 				firstHash.should.eql(secondHash);
+			});
+		});
+		describe("validating requests", function(){
+			it("should validate a correct signature", function(){
+				var isValid = requestSigning.validateRequest(request, "3BckWpCNwqSGdD9g*nZDN");
+				isValid.should.eql(true);
 			});
 		});
 
@@ -83,7 +89,7 @@ module.exports = function (util) {
 				request.query.zKey = true;
 
 				var baseString = Rfc3986.decode(Rfc3986.decode(requestSigning.createBaseString(request)));
-				baseString.should.match(/&ab%c=val ue&anotherKey=anotherValue&authKey=legacy-system&key=value&zKey=true$/);
+				baseString.should.match(/&ab%c=val ue&anotherKey=anotherValue&authKey=admin-frontend&key=value&zKey=true$/);
 			});
 		});
 		//example in documentaion https://dev.twitter.com/docs/auth/creating-signature
@@ -109,7 +115,7 @@ module.exports = function (util) {
 
 			it("should create the base string as specified in the twitter docs", function(){
 				var baseString = requestSigning.createBaseString(request);
-				baseString.should.match(/POST&https%3A%2F%2Fapi.twitter.com%2F1%2Fstatuses%2Fupdate.json&include_entities%3Dtrue/)
+				baseString.should.match(/POST&https%3A%2F%2Fapi.twitter.com%2F1%2Fstatuses%2Fupdate.json&include_entities%3Dtrue/);
 				baseString.should.match(/%26oauth_consumer_key%3Dxvz1evFS4wEEPTGEFPHBog/);
 				baseString.should.match(/%26oauth_nonce%3DkYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg/);
 				baseString.should.match(/%26oauth_signature_method%3DHMAC-SHA1/);
@@ -123,6 +129,6 @@ module.exports = function (util) {
 				var signature = requestSigning.sign(request, secret);
 				signature.should.eql("tnnArxj06cWHq44gCs1OSKk/jLY=");
 			});
-		})
+		});
 	});
 };

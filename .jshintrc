@@ -59,6 +59,7 @@
         "afterEach"  : false,
         /* CHAI */
         "should"     : true,
-        "chai"       : true
+        "chai"       : true,
+        "escape"     : true
       }
 }

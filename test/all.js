@@ -12,6 +12,8 @@ describe("victor-node-lib", function(){
   });
 
   util.requireSpecs([
-    "./request-signing"
+    "./datetime",
+    "./request-signing",
+    "./filters/checkKeys"
   ]);
 });
