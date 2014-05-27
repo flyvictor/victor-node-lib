@@ -28,14 +28,19 @@ var createBaseString = function(request){
 		method = request.method || "",
 		baseUrl = request.protocol + "://" + request.headers.host + request.path;
 
-	return  method.toUpperCase() + "&" + Rfc3986.encode(baseUrl)+ "&" + Rfc3986.encode(baseParamsString);
+	var baseString =  method.toUpperCase() + "&" + Rfc3986.encode(baseUrl)+ "&" + Rfc3986.encode(baseParamsString);
+	console.log("base string for signature", baseString);
+	return baseString;
 };
 
 var signRequest = function(request, secretKey){
 	var hmac = crypto.createHmac("sha1", secretKey);
 	var baseString = createBaseString(request);
 	hmac.update(baseString);
-	return hmac.digest("base64");
+	var signature = hmac.digest("base64");
+
+    console.log("requestSigning calculated signature", signature);
+	return signature;
 };
 
 var validateRequest = function(request, secretKey){

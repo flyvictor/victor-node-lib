@@ -22,8 +22,6 @@ var checkKeys = function(req, res, next) {
   }
   else {
     var hasValidSignature = requestSigning.validateRequest(req, secret);
-    console.log("base string for signature", requestSigning.createBaseString(req));
-    console.log("requestSigning calculated signature", requestSigning.sign(req, secret));
 
     if(!hasValidSignature){
       console.error("checkKeys request failed key check, rejecting as HTTP 401");
