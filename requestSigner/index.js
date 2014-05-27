@@ -5,7 +5,7 @@ var crypto = require("crypto"),
 //Detailed description of this functionality can be found on: https://dev.twitter.com/docs/auth/creating-signature
 var createBaseString = function(request){
 	//1. Collect the parameters from query string and Body
-	var params = _.extend(request.query, request.body), 
+	var params = _.extend({}, request.query, request.body), 
 		encodedParams = {};
 
 	//2. enocde each key and value
