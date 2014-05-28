@@ -13,7 +13,7 @@ var getKey = function(key){
   return result;
 };
 var checkKeys = function(req, res, next) {
-  var key = req.query.authKey,
+  var key = (req.query || {}).authKey || (req.headers||{}).authKey || (req.body||{}).authKey,
     secret = getKey(key);
 
   if(!secret){
@@ -21,7 +21,7 @@ var checkKeys = function(req, res, next) {
     res.send(401);
   }
   else {
-    var hasValidSignature = requestSigner.validateRequest(req, secret);
+    var hasValidSignature = requestSigner.validateRequest(req, secret, null);
 
     if(!hasValidSignature){
       console.error("checkKeys request failed key check, rejecting as HTTP 401");

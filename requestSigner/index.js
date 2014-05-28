@@ -11,7 +11,7 @@ var createBaseString = function(request){
 	//2. enocde each key and value
 	_.each(params, function(val, key){
 		//authSignature is the actual signature to compare against, it should be ignored in the base string
-		if(key!== "authSignature"){ 
+		if(key!== "oauth_signature"){ 
 			encodedParams[Rfc3986.encode(key)] = Rfc3986.encode(val);
 		}
 	});
@@ -33,8 +33,13 @@ var createBaseString = function(request){
 	return baseString;
 };
 
-var signRequest = function(request, secretKey){
-	var hmac = crypto.createHmac("sha1", secretKey);
+var signRequest = function(request, secretKey, oAuthTokenSecret){
+	//signing key should encoded secretKey & encoded oAuthTokenSecret (which we don't have now but just adding it to make consistent with api docs)
+	var signingKey = Rfc3986.encode(secretKey) + "&";
+	if(oAuthTokenSecret)
+		signingKey += Rfc3986.encode(oAuthTokenSecret);
+
+	var hmac = crypto.createHmac("sha1", signingKey);
 	var baseString = createBaseString(request);
 	hmac.update(baseString);
 	var signature = hmac.digest("base64");
@@ -43,9 +48,9 @@ var signRequest = function(request, secretKey){
 	return signature;
 };
 
-var validateRequest = function(request, secretKey){
-	var expectedSignature = signRequest(request, secretKey);
-	return expectedSignature === Rfc3986.decode(request.query.authSignature);
+var validateRequest = function(request, secretKey, oAuthTokenSecret){
+	var expectedSignature = signRequest(request, secretKey, oAuthTokenSecret);
+	return expectedSignature === Rfc3986.decode((request.query||{}).oauth_signature || (request.headers||{}).oauth_signature || (request.body || {}).oauth_signature);
 };
 
 module.exports.createBaseString = createBaseString;

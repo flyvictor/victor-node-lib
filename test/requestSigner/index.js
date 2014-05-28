@@ -1,8 +1,9 @@
 var requestSigner = require("../../requestSigner"),
+	crypto = require("crypto"),
 	Rfc3986 = require("../../requestSigner/Rfc3986"),
 	_ = require("underscore");
 
-module.exports = function () {
+module.exports = function (utils) {
 	var expectDifferentHashes = function(firstRequst, changeToRequest, secret){
 		var secondRequest = _.clone(firstRequst);
 		secondRequest = _.extend(secondRequest, changeToRequest);
@@ -24,7 +25,7 @@ module.exports = function () {
 				body: {key: "value"},
 				method: "POST",
 				path: "/sync-something",
-				query: {"authKey": "admin-frontend", authSignature : "JssQACBEOA1X7EFXCPMN7Cnx1as="}
+				query: {"authKey": "admin-frontend", oauth_signature : "fRTrPesfazKHgEypSfPbIVRa7Js="}
 			};
 		});
 
@@ -47,12 +48,32 @@ module.exports = function () {
 
 			it("should generate same hash ignoring authSignature parameter", function(){
 				var firstHash = requestSigner.sign(request, secret);
-				request.query.authSignature = "asdasddsad";
+				request.query.oauth_signature = "asdasddsad";
 				var secondHash = requestSigner.sign(request, secret);
 				
 				firstHash.should.eql(secondHash);
 			});
 		});
+
+		describe("signing key", function(){
+			beforeEach(function(){
+				utils.testDependencies().sinon.spy(crypto, "createHmac");
+			});
+			afterEach(function(){
+				crypto.createHmac.restore();
+			})
+
+			it("should generate a key from secret if no consumerToken", function(){
+				requestSigner.validateRequest(request, secret);
+				crypto.createHmac.should.have.been.calledWith("sha1", "3BckWpCNwqSGdD9g%2AnZDN&");
+			});
+
+			it("should generate a key from secret and consumerToken if there is consumerToken", function(){
+				requestSigner.validateRequest(request, secret, "token");
+				crypto.createHmac.should.have.been.calledWith("sha1", "3BckWpCNwqSGdD9g%2AnZDN&token");
+			});
+		});
+
 		describe("validating requests", function(){
 			it("should validate a correct signature", function(){
 				var isValid = requestSigner.validateRequest(request, "3BckWpCNwqSGdD9g*nZDN");
@@ -111,7 +132,8 @@ module.exports = function () {
 				}
 			};
 
-			var secret = "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw&LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE";
+			var secret = "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw",
+				consumerKey = "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE";
 
 			it("should create the base string as specified in the twitter docs", function(){
 				var baseString = requestSigner.createBaseString(request);
@@ -126,7 +148,7 @@ module.exports = function () {
 			});
 
 			it("should create the signature as specified in the twitter docs", function(){
-				var signature = requestSigner.sign(request, secret);
+				var signature = requestSigner.sign(request, secret, consumerKey);
 				signature.should.eql("tnnArxj06cWHq44gCs1OSKk/jLY=");
 			});
 		});
