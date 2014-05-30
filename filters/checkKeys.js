@@ -13,7 +13,7 @@ var getKey = function(key){
   return result;
 };
 var checkKeys = function(req, res, next) {
-  var key = (req.query || {}).authKey || (req.headers||{}).authKey || (req.body||{}).authKey,
+  var key = (req.query || {}).authKey || (req.headers||{}).authkey || (req.body||{}).authKey,
     secret = getKey(key);
 
   if(!secret){
