@@ -46,13 +46,14 @@ var signRequest = function(request, secretKey, oAuthTokenSecret){
 	hmac.update(baseString);
 	var signature = hmac.digest("base64");
 
-    console.log("requestSigning calculated signature", signature);
+  console.log("requestSigning calculated signature", signature);
 	return signature;
 };
 
-var validateRequest = function(request, secretKey, oAuthTokenSecret){
+var validateRequest = function(request, signature, secretKey, oAuthTokenSecret){
 	var expectedSignature = signRequest(request, secretKey, oAuthTokenSecret);
-	return expectedSignature === Rfc3986.decode((request.query||{}).oauth_signature || (request.headers||{}).oauth_signature || (request.body || {}).oauth_signature);
+	console.log("validate request, expected signature : %s", expectedSignature);
+	return expectedSignature === Rfc3986.decode(signature);
 };
 
 module.exports.createBaseString = createBaseString;

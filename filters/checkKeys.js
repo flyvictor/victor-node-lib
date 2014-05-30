@@ -1,16 +1,6 @@
 var _ = require("underscore"),
   requestSigner = require("../requestSigner");
 
-var credentialsParser = function(req, res, next) {
-  
-  req.clientApp = { authKey : (req.query || {}).authKey || (req.headers||{}).authKey || (req.body||{}).authKey };
-  req.user = {
-    authToken : _.result(req.headers, "userauthtoken") || _.result(req.query, "userAuthToken")
-  };
-
-  next();
-};
-
 var getKey = function(key){
   if (!key) return false;
   
@@ -27,14 +17,17 @@ var getKey = function(key){
 
 var checkKeys = function(req, res, next) {
   var key = req.clientApp ? req.clientApp.authKey : null,
-    secret = getKey(key);
+      sig = req.clientApp ? req.clientApp.oauthSignature : null,
+      secret = getKey(key);
+
+  console.log("Check keys %s, %s", key, secret);
 
   if(!secret){
     console.log("checkKeys: invalid key " + key);
     res.send(401);
   }
   else {
-    var hasValidSignature = requestSigner.validateRequest(req, secret, null);
+    var hasValidSignature = requestSigner.validateRequest(req, sig, null);
 
     if(!hasValidSignature){
       console.error("checkKeys request failed key check, rejecting as HTTP 401");
@@ -51,4 +44,3 @@ var checkKeys = function(req, res, next) {
 
 exports.checkKeys = checkKeys;
 exports.getKey = getKey;
-exports.credentialsParser = credentialsParser;
