@@ -20,8 +20,7 @@ module.exports = function (utils) {
 
 		beforeEach(function(){
 			request = {
-				protocol: "https",
-				headers: {host: "localhost:3012"},
+				headers: {host: "localhost:3012", "x-forwarded-proto": "https"},
 				body: {key: "value"},
 				method: "POST",
 				path: "/sync-something",
@@ -42,8 +41,8 @@ module.exports = function (utils) {
 				expectDifferentHashes(request, {query: {"authKey": "legacy-system", "some": "value"}}, secret);
 			});
 
-			it("should generate different hashes on a different protocols", function(){
-				expectDifferentHashes(request, {protocol: "http"}, secret);
+			it("should generate different hashes on different protocols", function(){
+				expectDifferentHashes(request, {protocol: "http", headers: {host: "localhost:3012"}}, secret);
 			});
 
 			it("should generate same hash ignoring authSignature parameter", function(){
@@ -98,6 +97,12 @@ module.exports = function (utils) {
 				baseString.should.match(/POST&https%3A%2F%2Flocalhost%3A3012%2Fsync-something&/);
 			});
 
+
+			it("should have the base url encoded", function(){
+				var baseString = requestSigner.createBaseString(request);
+				baseString.should.match(/POST&https%3A%2F%2Flocalhost%3A3012%2Fsync-something&/);
+			});
+
 			it("should not have any (=) sign as they are all encoded to %3D", function(){
 				var baseString = requestSigner.createBaseString(request);
 				baseString.search(/=/).should.eql(-1);
@@ -117,7 +122,7 @@ module.exports = function (utils) {
 		describe("example from Twitter api documentation", function(){
 			var request = {
 				protocol: "https",
-				headers: {host: "api.twitter.com"},
+				headers: {host: "api.twitter.com", "x-forwarded-proto": "https"},
 				body: {status: "Hello Ladies + Gentlemen, a signed OAuth request!"},
 				method: "POST",
 				path: "/1/statuses/update.json",

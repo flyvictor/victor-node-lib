@@ -24,9 +24,11 @@ var createBaseString = function(request){
 		return key + "=" + encodedParams[key];
 	});
 
+	var protocol = (request.headers["x-forwarded-proto"] === "https")? "https": request.protocol;
+
 	var baseParamsString = baseParams.join("&"),
 		method = request.method || "",
-		baseUrl = request.protocol + "://" + request.headers.host + request.path;
+		baseUrl = protocol + "://" + request.headers.host + request.path;
 
 	var baseString =  method.toUpperCase() + "&" + Rfc3986.encode(baseUrl)+ "&" + Rfc3986.encode(baseParamsString);
 	console.log("base string for signature", baseString);
