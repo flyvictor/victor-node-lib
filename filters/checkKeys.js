@@ -2,6 +2,8 @@ var _ = require("underscore"),
   requestSigner = require("../requestSigner");
 
 var getKey = function(key){
+  if (!key) return false;
+  
   var keyPairs = process.env.CLIENT_KEYS || "legacy-application:kfJyFWwUB3ZXNr0KC!vRz$;admin-frontend:3BckWpCNwqSGdD9g*nZDN;";
   var result;
   _.each(keyPairs.split(";"), function(val){
@@ -12,22 +14,31 @@ var getKey = function(key){
   });
   return result;
 };
+
 var checkKeys = function(req, res, next) {
-  var key = (req.query || {}).authKey || (req.headers||{}).authkey || (req.body||{}).authKey,
-    secret = getKey(key);
+  var key = req.clientApp ? req.clientApp.authKey : null,
+      sig = req.clientApp ? req.clientApp.oauthSignature : null,
+      secret = getKey(key);
+
+  console.log("Check keys %s, %s", key, secret);
 
   if(!secret){
     console.log("checkKeys: invalid key " + key);
     res.send(401);
   }
   else {
-    var hasValidSignature = requestSigner.validateRequest(req, secret, null);
+    var hasValidSignature = requestSigner.validateRequest(req, sig, null);
 
     if(!hasValidSignature){
       console.error("checkKeys request failed key check, rejecting as HTTP 401");
       res.send(401);
     }
-    else next();
+
+    else {
+      req.clientApp = req.clientApp || {};
+      req.clientApp.authenticated = true;
+      next();
+    }
   }
 };
 

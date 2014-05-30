@@ -24,7 +24,8 @@ module.exports = function (utils) {
 				body: {key: "value"},
 				method: "POST",
 				path: "/sync-something",
-				query: {"authKey": "admin-frontend", oauth_signature : "fRTrPesfazKHgEypSfPbIVRa7Js="}
+				query : {},
+				clientApp : { authKey: "admin-frontend", oauthSignature : "pOA4tmWZuHC/Emi6/eUBM8k1EWM=" }
 			};
 		});
 
@@ -63,19 +64,19 @@ module.exports = function (utils) {
 			})
 
 			it("should generate a key from secret if no consumerToken", function(){
-				requestSigner.validateRequest(request, secret);
+				requestSigner.validateRequest(request, request.clientApp.oauthSignature, secret);
 				crypto.createHmac.should.have.been.calledWith("sha1", "3BckWpCNwqSGdD9g%2AnZDN&");
 			});
 
 			it("should generate a key from secret and consumerToken if there is consumerToken", function(){
-				requestSigner.validateRequest(request, secret, "token");
+				requestSigner.validateRequest(request, request.clientApp.oauthSignature, secret, "token");
 				crypto.createHmac.should.have.been.calledWith("sha1", "3BckWpCNwqSGdD9g%2AnZDN&token");
 			});
 		});
 
 		describe("validating requests", function(){
 			it("should validate a correct signature", function(){
-				var isValid = requestSigner.validateRequest(request, "3BckWpCNwqSGdD9g*nZDN");
+				var isValid = requestSigner.validateRequest(request, request.clientApp.oauthSignature, "3BckWpCNwqSGdD9g*nZDN");
 				isValid.should.eql(true);
 			});
 		});
@@ -115,7 +116,7 @@ module.exports = function (utils) {
 				request.query.zKey = true;
 
 				var baseString = Rfc3986.decode(Rfc3986.decode(requestSigner.createBaseString(request)));
-				baseString.should.match(/&ab%c=val ue&anotherKey=anotherValue&authKey=admin-frontend&key=value&zKey=true$/);
+				baseString.should.match(/&ab%c=val ue&anotherKey=anotherValue&key=value&zKey=true$/);
 			});
 		});
 		//example in documentaion https://dev.twitter.com/docs/auth/creating-signature
