@@ -27,7 +27,7 @@ var checkKeys = function(req, res, next) {
     res.send(401);
   }
   else {
-    var hasValidSignature = requestSigner.validateRequest(req, sig, null);
+    var hasValidSignature = requestSigner.validateRequest(req, sig, secret, null);
 
     if(!hasValidSignature){
       console.error("checkKeys request failed key check, rejecting as HTTP 401");
