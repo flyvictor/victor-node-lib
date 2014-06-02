@@ -20,10 +20,10 @@ var checkKeys = function(req, res, next) {
       sig = req.clientApp ? req.clientApp.oauthSignature : null,
       secret = getKey(key);
 
-  console.log("Check keys %s, %s", key, secret);
+  // console.log("Check keys %s, %s", key, secret);
 
   if(!secret){
-    console.log("checkKeys: invalid key " + key);
+    console.error("checkKeys: invalid key " + key);
     res.send(401);
   }
   else {

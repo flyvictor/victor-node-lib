@@ -3,15 +3,15 @@ var crypto = require("crypto"),
 	_ = require("underscore");
 
 //Detailed description of this functionality can be found on: https://dev.twitter.com/docs/auth/creating-signature
-var createBaseString = function(request){
+var createBaseString = function(request) {
 	//1. Collect the parameters from query string and Body
-	var params = _.extend({}, request.query, request.body), 
+	var params = _.extend({}, request.query, request.body),
 		encodedParams = {};
 
 	//2. enocde each key and value
 	_.each(params, function(val, key){
 		//authSignature is the actual signature to compare against, it should be ignored in the base string
-		if(key!== "oauth_signature"){ 
+		if(key!== "oauth_signature"){
 			encodedParams[Rfc3986.encode(key)] = Rfc3986.encode(val);
 		}
 	});
@@ -31,7 +31,7 @@ var createBaseString = function(request){
 		baseUrl = protocol + "://" + request.headers.host + request.path;
 
 	var baseString =  method.toUpperCase() + "&" + Rfc3986.encode(baseUrl)+ "&" + Rfc3986.encode(baseParamsString);
-	console.log("base string for signature", baseString);
+	// console.log("base string for signature", baseString);
 	return baseString;
 };
 
@@ -46,13 +46,13 @@ var signRequest = function(request, secretKey, oAuthTokenSecret){
 	hmac.update(baseString);
 	var signature = hmac.digest("base64");
 
-  console.log("requestSigning calculated signature", signature);
+  // console.log("requestSigning calculated signature", signature);
 	return signature;
 };
 
 var validateRequest = function(request, signature, secretKey, oAuthTokenSecret){
 	var expectedSignature = signRequest(request, secretKey, oAuthTokenSecret);
-	console.log("validate request, expected signature : %s", expectedSignature);
+	// console.log("validate request, expected signature : %s", expectedSignature);
 	return expectedSignature === Rfc3986.decode(signature);
 };
 
