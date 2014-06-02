@@ -45,7 +45,7 @@ module.exports = function(){
     });
 
     it("should call next if the signature is correct", function(){
-      req.clientApp = { authKey : "admin-frontend", oauthSignature : "MUB5y4TFtdk8wAEl/YxY8C5NzZ0=" };
+      req.clientApp = { authKey : "admin-frontend", oauthSignature : "pOA4tmWZuHC/Emi6/eUBM8k1EWM=" };
       keysChecker.checkKeys(req, res, next);
       next.callCount.should.eql(1);
     });
@@ -53,7 +53,7 @@ module.exports = function(){
     it("should call send 401 if the signature is incorrect", function(){
       req.clientApp = {
         authKey : "admin-frontend",
-        oauthSignature : "MUB5y4TFtdk8wAEl/YxY8C5NzZ0"
+        oauthSignature : " pOA4tmWZuHC/Emi6/eUBM8k1EWM"
       }; //missing = at the end of the string
 
       keysChecker.checkKeys(req, res, next);
