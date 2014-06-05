@@ -51,6 +51,7 @@ var signRequest = function(request, secretKey, oAuthTokenSecret){
 };
 
 var validateRequest = function(request, secretKey, oAuthTokenSecret){
+	/*jshint camelcase: false */
 	var expectedSignature = signRequest(request, secretKey, oAuthTokenSecret);
 	return expectedSignature === Rfc3986.decode((request.query||{}).oauth_signature || (request.headers||{}).oauth_signature || (request.body || {}).oauth_signature);
 };

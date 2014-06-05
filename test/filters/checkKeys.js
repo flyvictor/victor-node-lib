@@ -45,12 +45,14 @@ module.exports = function(){
     });
 
     it("should call next if the signature is correct", function(){
+      /*jshint camelcase: false */
       req.query.oauth_signature = "fRTrPesfazKHgEypSfPbIVRa7Js=";
       keysChecker.checkKeys(req, res, next);
       next.callCount.should.eql(1);
     });
 
     it("should call send 401 if the signature is incorrect", function(){
+      /*jshint camelcase: false */
       req.query.oauth_signature = "fRTrPesfazKHgEypSfPbIVRa7Js"; //missing = at the end of the string
       keysChecker.checkKeys(req, res, next);
       next.callCount.should.eql(0);
@@ -60,12 +62,14 @@ module.exports = function(){
     it("should work with authKey in body", function(){
       req.body.authKey = "admin-frontend";
       delete req.query;
+      /*jshint camelcase: false */
       req.headers.oauth_signature = "fRTrPesfazKHgEypSfPbIVRa7Js=";
       keysChecker.checkKeys(req, res, next);
       next.callCount.should.eql(1);
     });
 
     it("should work with signature in body", function(){
+      /*jshint camelcase: false */
       req.body.authKey = "admin-frontend";
       delete req.query;
       req.body.oauth_signature = "fRTrPesfazKHgEypSfPbIVRa7Js=";
