@@ -29,4 +29,5 @@ module.exports = _.reduce(["get", "post", "put", "del", "patch"], function(memo,
   return memo;
 }, _.clone(request));
 
-
+// allow a request wrapper to be injected
+module.exports.setRequest = function (r) { request = r; };

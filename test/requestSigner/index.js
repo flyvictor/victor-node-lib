@@ -3,6 +3,7 @@ var requestSigner = require("../../requestSigner"),
 	Rfc3986 = require("../../requestSigner/Rfc3986"),
 	_ = require("underscore");
 
+
 module.exports = function (utils) {
 	var expectDifferentHashes = function(firstRequst, changeToRequest, secret){
 		var secondRequest = _.clone(firstRequst);
@@ -48,6 +49,7 @@ module.exports = function (utils) {
 
 			it("should generate same hash ignoring authSignature parameter", function(){
 				var firstHash = requestSigner.sign(request, secret);
+				/*jshint camelcase: false */
 				request.query.oauth_signature = "asdasddsad";
 				var secondHash = requestSigner.sign(request, secret);
 				
@@ -61,7 +63,7 @@ module.exports = function (utils) {
 			});
 			afterEach(function(){
 				crypto.createHmac.restore();
-			})
+			});
 
 			it("should generate a key from secret if no consumerToken", function(){
 				requestSigner.validateRequest(request, request.clientApp.oauthSignature, secret);

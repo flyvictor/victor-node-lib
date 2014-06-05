@@ -42,6 +42,7 @@ module.exports = function() {
     });
   
     it("should work with signature in querystring", function(){
+      /*jshint camelcase: false*/
       req.query = { oauth_signature : "fRTrPesfazKHgEypSfPbIVRa7Js=" };
       credentialsParser(req, res, next);
       next.callCount.should.eql(1);
@@ -49,6 +50,7 @@ module.exports = function() {
     });
   
     it("should work with signature in header", function(){
+      /*jshint camelcase: false*/
       req.headers = { oauth_signature : "fRTrPesfazKHgEypSfPbIVRa7Js=" };
       credentialsParser(req, res, next);
       next.callCount.should.eql(1);
@@ -56,6 +58,7 @@ module.exports = function() {
     });
 
     it("should work with signature in body", function(){
+      /*jshint camelcase: false*/
       req.body = { oauth_signature : "fRTrPesfazKHgEypSfPbIVRa7Js=" };
       credentialsParser(req, res, next);
       next.callCount.should.eql(1);

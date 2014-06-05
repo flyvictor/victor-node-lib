@@ -60,6 +60,5 @@ module.exports = function(){
       next.callCount.should.eql(0);
       res.send.should.have.been.calledWith(401);
     });
-
   });
 };
