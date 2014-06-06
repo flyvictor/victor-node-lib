@@ -60,5 +60,11 @@ module.exports = function(){
       next.callCount.should.eql(0);
       res.send.should.have.been.calledWith(401);
     });
+
+    it("should call next if the request is internal", function(){
+      req.headers["internal-request"] = true;
+      keysChecker.checkKeys(req, res, next);
+      next.callCount.should.eql(1);
+    });
   });
 };
