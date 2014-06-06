@@ -29,5 +29,7 @@ module.exports = _.reduce(["get", "post", "put", "del", "patch"], function(memo,
   return memo;
 }, _.clone(request));
 
+module.exports.version = "WEB-3444-update-request-promise"
+
 // allow a request wrapper to be injected
 module.exports.setRequest = function (r) { request = r; };
