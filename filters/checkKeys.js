@@ -22,7 +22,10 @@ var checkKeys = function(req, res, next) {
 
   // console.log("Check keys %s, %s", key, secret);
 
-  if(!secret){
+  if(req.headers && req.headers["internal-request"]){
+    console.log("ignoring auth cause it's internal-request");
+    next();
+  } else if(!secret){
     console.error("checkKeys: invalid key " + key);
     res.send(401);
   }
