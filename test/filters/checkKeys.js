@@ -19,7 +19,10 @@ module.exports = function(){
     beforeEach(function(){
       req = {
         protocol: "https",
-        headers: {host: "localhost:3012",  "x-forwarded-proto": "https"},
+        headers: {host: "localhost:3012",
+          "x-forwarded-proto": "https",
+          "content-type":"application/x-www-form-urlencoded"
+        },
         body: {key: "value"},
         method: "POST",
         path: "/sync-something"

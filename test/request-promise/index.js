@@ -13,7 +13,9 @@ chai.use(sinonChai);
 
 describe("requestPromise", function(){
   it("makes all request methods available", function(){
-    _.keys(requestPromise).should.eql(_.keys(request));
+    _.each(_.keys(request), function(requestKey){
+      _.keys(requestPromise).should.include(requestKey);
+    });
   });
 
   describe("http method", function(){
