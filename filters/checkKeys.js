@@ -24,14 +24,14 @@ var checkKeys = function(req, res, next) {
     /*jshint camelcase: false */
     var key = req.clientApp ? req.clientApp.authKey : null,
       sig = req.clientApp ? req.clientApp.oauthSignature : null,
-      secret = getKey(key) || (req.oAuthHeaders || {}).oauth_consumer_key;
+      consumerSecret = getKey(key);
 
-    if(!secret){
+    if(!consumerSecret){
       console.error("checkKeys: invalid key " + key);
       res.send(401);
     }
     else {
-      var hasValidSignature = requestSigner.validateRequest(req, sig, secret, null);
+      var hasValidSignature = requestSigner.validateRequest(req, sig, consumerSecret, null);
 
       if(!hasValidSignature){
         console.error("checkKeys request failed key check, rejecting as HTTP 401");

@@ -50,9 +50,9 @@ var createBaseString = function(request) {
 	return baseString;
 };
 
-var signRequest = function(request, secretKey, oAuthTokenSecret){
-	//signing key should encoded secretKey & encoded oAuthTokenSecret (which we don't have now but just adding it to make consistent with api docs)
-	var signingKey = Rfc3986.encode(secretKey) + "&";
+var signRequest = function(request, consumerSecret, oAuthTokenSecret){
+	//signing key should encoded consumerSecret & encoded oAuthTokenSecret (which we don't have now but just adding it to make consistent with api docs)
+	var signingKey = Rfc3986.encode(consumerSecret) + "&";
 	if(oAuthTokenSecret)
 		signingKey += Rfc3986.encode(oAuthTokenSecret);
 
@@ -65,9 +65,9 @@ var signRequest = function(request, secretKey, oAuthTokenSecret){
 	return signature;
 };
 
-var validateRequest = function(request, signature, secretKey, oAuthTokenSecret){
+var validateRequest = function(request, signature, consumerSecret, oAuthTokenSecret){
 	/*jshint camelcase: false */
-	var expectedSignature = signRequest(request, secretKey, oAuthTokenSecret);
+	var expectedSignature = signRequest(request, consumerSecret, oAuthTokenSecret);
 	 console.log("validate request, expected signature : %s, passed signature: %s", expectedSignature, signature);
 	return expectedSignature === Rfc3986.decode(signature);
 };
