@@ -76,10 +76,11 @@ module.exports = function() {
         };
       });
 
-      it("should grab authKey correctly in header", function(){
+      it("should grab authKey and signature correctly in header", function(){
         credentialsParser(req, res, next);
         next.callCount.should.eql(1);
-        //req.clientApp.authKey.should.eql("admin-frontend");
+        req.clientApp.authKey.should.eql("admin-frontend");
+        req.clientApp.oauthSignature.should.eql("wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D");
       });
 
       it("should get oauth parameters from authorization header", function(){
