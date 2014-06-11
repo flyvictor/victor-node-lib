@@ -2,11 +2,26 @@ var crypto = require("crypto"),
 	Rfc3986 = require("./Rfc3986"),
 	_ = require("underscore");
 
+
+
 //Detailed description of this functionality can be found on: https://dev.twitter.com/docs/auth/creating-signature
 var createBaseString = function(request) {
 	//1. Collect the parameters from query string and Body
-	var params = _.extend({}, request.query, request.body),
+	var params = {},
 		encodedParams = {};
+
+	if(request.method === "GET") {
+		params = _.extend(params, request.query);
+	}
+
+	if(request.method === "POST" && request.headers["content-type"] === "application/x-www-form-urlencoded"){
+		params = _.extend(params, request.body);
+	}
+
+	if(request.headers.authorization){
+		params = _.extend(params, request.oAuthHeaders);
+	}
+
 
 	//2. enocde each key and value
 	_.each(params, function(val, key){
@@ -31,13 +46,13 @@ var createBaseString = function(request) {
 		baseUrl = protocol + "://" + request.headers.host + request.path;
 
 	var baseString =  method.toUpperCase() + "&" + Rfc3986.encode(baseUrl)+ "&" + Rfc3986.encode(baseParamsString);
-	// console.log("base string for signature", baseString);
+	 console.log("base string for signature", baseString);
 	return baseString;
 };
 
-var signRequest = function(request, secretKey, oAuthTokenSecret){
-	//signing key should encoded secretKey & encoded oAuthTokenSecret (which we don't have now but just adding it to make consistent with api docs)
-	var signingKey = Rfc3986.encode(secretKey) + "&";
+var signRequest = function(request, consumerSecret, oAuthTokenSecret){
+	//signing key should encoded consumerSecret & encoded oAuthTokenSecret (which we don't have now but just adding it to make consistent with api docs)
+	var signingKey = Rfc3986.encode(consumerSecret) + "&";
 	if(oAuthTokenSecret)
 		signingKey += Rfc3986.encode(oAuthTokenSecret);
 
@@ -50,10 +65,10 @@ var signRequest = function(request, secretKey, oAuthTokenSecret){
 	return signature;
 };
 
-var validateRequest = function(request, signature, secretKey, oAuthTokenSecret){
+var validateRequest = function(request, signature, consumerSecret, oAuthTokenSecret){
 	/*jshint camelcase: false */
-	var expectedSignature = signRequest(request, secretKey, oAuthTokenSecret);
-	// console.log("validate request, expected signature : %s", expectedSignature);
+	var expectedSignature = signRequest(request, consumerSecret, oAuthTokenSecret);
+	 console.log("validate request, expected signature : %s, passed signature: %s", expectedSignature, signature);
 	return expectedSignature === Rfc3986.decode(signature);
 };
 

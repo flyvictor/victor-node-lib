@@ -21,7 +21,11 @@ module.exports = function (utils) {
 
 		beforeEach(function(){
 			request = {
-				headers: {host: "localhost:3012", "x-forwarded-proto": "https"},
+				headers: {
+					"host": "localhost:3012",
+					"x-forwarded-proto": "https",
+					"content-type":"application/x-www-form-urlencoded"
+				},
 				body: {key: "value"},
 				method: "POST",
 				path: "/sync-something",
@@ -40,6 +44,7 @@ module.exports = function (utils) {
 			});
 
 			it("should generate different hashes on a different query string", function(){
+				request.method = "GET";
 				expectDifferentHashes(request, {query: {"authKey": "legacy-system", "some": "value"}}, secret);
 			});
 
@@ -113,23 +118,25 @@ module.exports = function (utils) {
 			});
 
 			it("should have all keys encoded and alphabetically ordered", function(){
+				request.method = "GET";
 				request.query.anotherKey = "anotherValue";
-				request.body["ab%c"] = "val ue";
+				request.query["ab%c"] = "val ue";
 				request.query.zKey = true;
 
 				var baseString = Rfc3986.decode(Rfc3986.decode(requestSigner.createBaseString(request)));
-				baseString.should.match(/&ab%c=val ue&anotherKey=anotherValue&key=value&zKey=true$/);
+				baseString.should.match(/&ab%c=val ue&anotherKey=anotherValue&zKey=true$/);
 			});
 		});
 		//example in documentaion https://dev.twitter.com/docs/auth/creating-signature
 		describe("example from Twitter api documentation", function(){
 			var request = {
 				protocol: "https",
-				headers: {host: "api.twitter.com", "x-forwarded-proto": "https"},
-				body: {status: "Hello Ladies + Gentlemen, a signed OAuth request!"},
-				method: "POST",
-				path: "/1/statuses/update.json",
-				query: {
+				headers: {
+					host: "api.twitter.com",
+					"x-forwarded-proto": "https",
+					"content-type":"application/x-www-form-urlencoded"
+				},
+				body: {status: "Hello Ladies + Gentlemen, a signed OAuth request!",
 					"include_entities": true,
 					"oauth_consumer_key":	"xvz1evFS4wEEPTGEFPHBog",
 					"oauth_nonce":	"kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
@@ -137,7 +144,9 @@ module.exports = function (utils) {
 					"oauth_timestamp":	1318622958,
 					"oauth_token":	"370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
 					"oauth_version": "1.0"
-				}
+				},
+				method: "POST",
+				path: "/1/statuses/update.json"
 			};
 
 			var secret = "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw",

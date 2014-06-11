@@ -14,6 +14,7 @@ describe("victor-node-lib", function(){
   util.requireSpecs([
     "./datetime",
     "./requestSigner",
-    "./filters/checkKeys"
+    "./filters/checkKeys",
+    "./filters/credentialsParser"
   ]);
 });
