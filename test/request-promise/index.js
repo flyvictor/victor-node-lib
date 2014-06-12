@@ -21,10 +21,10 @@ describe("requestPromise", function(){
   describe("http method", function(){
     var testHttpMethodResolvesFor = function(name){
       return function(done){
-        sinon.stub(request, name).callsArgWith(1,null,{data:true});
+        sinon.stub(request, name).callsArgWith(1,null,{data:true,statusCode: 200});
         
         requestPromise[name]({url: "testurl"}).then(function(data){
-          expect(data).to.eql({data:true});
+          expect(data).to.eql({data:true, statusCode: 200});
           done();
         }).catch(function(err){ console.log("ERROR",err);});
 
@@ -43,9 +43,20 @@ describe("requestPromise", function(){
       };
     };
 
+    var testHttpMethodStatusCheckingFor = function(name){
+      return function(done){
+        sinon.stub(request, name).callsArgWith(1,null, {statusCode: 400, body: "Bad request"});
+        requestPromise[name]({url:"testurl"}).then(function(){ }).catch(function(err){
+          err.should.eql("400: Bad request");
+        }).should.notify(done);
+        request[name].restore();
+      };
+    };
+
     _.each(["put","post", "del", "put", "patch"], function(method){
       it("is wrapped as a promise that can resolve: " + method, testHttpMethodResolvesFor(method));
       it("is wrapped as a promise that can error:" + method, testHttpMethodErrorsFor(method));
+      it("is wrapped as a promise the errors with non 2xx status: " + method, testHttpMethodStatusCheckingFor(method));
     });
 
   });
