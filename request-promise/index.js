@@ -20,7 +20,17 @@ module.exports = _.reduce(["get", "post", "put", "del", "patch"], function(memo,
     }
 
     request[methodName].apply(request, _.union(arguments, function(err, data){
-      return err ? deferred.reject(err) : deferred.resolve(data);
+      if (err) {
+        return deferred.reject(err);
+      }
+      if (data && data.statusCode) {
+        if (data.statusCode >= 200 && data.statusCode < 300) {
+          return deferred.resolve(data);
+        } else {
+          deferred.reject(data.statusCode + ": " + data.body);
+        }
+      }
+      deferred.resolve(data);
     }));
 
     return deferred.promise;
