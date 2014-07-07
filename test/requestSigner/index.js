@@ -26,6 +26,7 @@ module.exports = function (utils) {
 					"x-forwarded-proto": "https",
 					"content-type":"application/x-www-form-urlencoded"
 				},
+				url: "http://localhost:3012/sync-something",
 				body: {key: "value"},
 				method: "POST",
 				path: "/sync-something",
@@ -45,7 +46,7 @@ module.exports = function (utils) {
 
 			it("should generate different hashes on a different query string", function(){
 				request.method = "GET";
-				expectDifferentHashes(request, {query: {"authKey": "legacy-system", "some": "value"}}, secret);
+				expectDifferentHashes(request, {url: "http://localhost:3012/sync-something/?authKey=legacy-system&some=value"}, secret);
 			});
 
 			it("should generate different hashes on different protocols", function(){
@@ -119,12 +120,26 @@ module.exports = function (utils) {
 
 			it("should have all keys encoded and alphabetically ordered", function(){
 				request.method = "GET";
-				request.query.anotherKey = "anotherValue";
-				request.query["ab%c"] = "val ue";
-				request.query.zKey = true;
+				request.url= "http://localhost:3012/sync-something/?anotherKey=anotherValue&ab%c=val ue&zKey=true";
 
 				var baseString = Rfc3986.decode(Rfc3986.decode(requestSigner.createBaseString(request)));
 				baseString.should.match(/&ab%c=val ue&anotherKey=anotherValue&zKey=true$/);
+			});
+		});
+		describe("example with nested query parameter", function(){
+			var request = {
+				protocol: "http",
+				headers: {
+					host: "localhost:3012"
+				},
+				method: "GET",
+				path: "/users/53a4427afe15a5020095f297/addresses",
+				url: "http://localhost:3012/users/53a4427afe15a5020095f297/addresses/?filter[dateDeleted]=null"
+			};
+
+			it("should create valid signature", function(){
+				var baseString = Rfc3986.decode(Rfc3986.decode(requestSigner.createBaseString(request)));
+				baseString.should.match(/users\/53a4427afe15a5020095f297\/addresses\&filter\[dateDeleted\]\=null$/);
 			});
 		});
 		//example in documentaion https://dev.twitter.com/docs/auth/creating-signature

@@ -11,7 +11,10 @@ var createBaseString = function(request) {
 		encodedParams = {};
 
 	if(request.method === "GET") {
-		params = _.extend(params, request.query);
+		var url = require("url");
+		var urlParts = url.parse(request.url, true);
+		var query = urlParts.query;
+		params = _.extend(params, query);
 	}
 
 	if(request.method === "POST" && request.headers["content-type"] === "application/x-www-form-urlencoded"){
