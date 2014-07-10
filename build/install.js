@@ -47,6 +47,7 @@ function autoExec(path) {
 
 if (existsSync(gitPath)) {
     var stats = fs.lstatSync(path.join(projectPath, '.git'));
+    console.log(stats);
     if (stats.isDirectory()) {
         if (existsSync(pcPath)) fs.unlinkSync(pcPath);
         if (!existsSync(path.dirname(pcPath))) fs.mkdirSync(path.dirname(pcPath));
@@ -62,10 +63,11 @@ if (existsSync(gitPath)) {
         var postCheckoutHook = fs.readFileSync(path.join(filePath, 'post-checkout'));
         fs.writeFileSync(postCheckoutPath, postCheckoutHook);
         fs.chmodSync(postCheckoutPath, '755');
-
-        // exectute file
-        autoExec(projectPath);
     }
+
+    // exectute file
+    autoExec(projectPath);
+
 } else if (existsSync(pcModulePath)){
     console.log('Found submodule .git directory, adding pre-commit hook');
     var pcHook = fs.readFileSync(path.join(filePath, 'pre-commit'));
