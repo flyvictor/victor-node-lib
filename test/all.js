@@ -15,6 +15,8 @@ describe("victor-node-lib", function(){
     "./datetime",
     "./requestSigner",
     "./filters/checkKeys",
-    "./filters/credentialsParser"
+    "./filters/credentialsParser",
+    "./access-policy/set-access-policies",
+    "./access-policy/restrict-resource-access"
   ]);
 });
