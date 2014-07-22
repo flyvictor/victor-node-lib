@@ -6,7 +6,7 @@ module.exports = function(){
   describe("Role-based access. Restrict access hook", function(){
     var hook;
     before(function(){
-      hook = restrictHook.init();
+      hook = restrictHook.init(restrictHook.config);
     });
     it("should be able to augment filter with policy restriction query", function(){
       var req = {

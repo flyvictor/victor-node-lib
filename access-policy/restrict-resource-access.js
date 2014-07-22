@@ -1,5 +1,4 @@
 var _ = require("underscore");
-var policies = require("./index").policies;
 
 function iterateLevel(skeleton, req){
   var query = _.isArray(skeleton) ? [] : {};
@@ -24,7 +23,7 @@ function iterateLevel(skeleton, req){
   }
 }
 
-function generatePolicyQuery(policy, req){
+function generatePolicyQuery(policies, policy, req){
   var skeleton = policies[policy].query;
   return iterateLevel(skeleton, req);
 }
@@ -32,12 +31,18 @@ function generatePolicyQuery(policy, req){
 module.exports = {
   name: "restrict-resource-access",
   priority: 10,
-  init: function(){
+  config: {
+    policies: require("./index").policies,
+    queryGenerator: generatePolicyQuery
+  },
+  init: function(options){
+    var policies = options.policies || require("./index").policies;
+    var generator = options.queryGenerator;
     return function(req){
       var uFilter = req.query.filter || {};
       var restrictiveQuery = {$or: []};
       _.each(req.accessPolicies, function(p){
-        restrictiveQuery.$or.push(generatePolicyQuery(p, req));
+        restrictiveQuery.$or.push(generator(policies, p, req));
       });
       req.query.filter = {
         $and: [uFilter, restrictiveQuery]

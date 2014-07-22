@@ -6,7 +6,7 @@ module.exports = function(){
   describe("access policies setter", function(){
     var hook;
     before(function(){
-      hook = setPolicies.init();
+      hook = setPolicies.init(setPolicies.config);
     });
     it("should be able to pick policies", function(){
       var req = {
