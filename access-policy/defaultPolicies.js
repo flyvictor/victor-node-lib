@@ -1,9 +1,11 @@
-var defaultPolicy = {
+var readMyPolicy = {
   query: {
     user: "@user.userId"
   }
 };
 
 module.exports = {
-  defaultPolicy: defaultPolicy
+  defaultPolicy: readMyPolicy,
+  readMyPolicy: readMyPolicy,
+  readAllPolicy: {}
 };

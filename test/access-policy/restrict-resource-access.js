@@ -1,6 +1,5 @@
 var _ = require("underscore");
 var restrictHook = require("../../access-policy/restrict-resource-access");
-var testPolicies = require("./testPolicies");
 var access = require("../../access-policy");
 
 module.exports = function(){
@@ -8,7 +7,6 @@ module.exports = function(){
     var hook;
     before(function(){
       hook = restrictHook.init();
-      access.extendPolicies(testPolicies);
     });
     it("should be able to augment filter with policy restriction query", function(){
       var req = {

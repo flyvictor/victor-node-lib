@@ -15,10 +15,7 @@ function getAppLevel(app){
 
 module.exports = {
   name: "set-access-policies",
-  config: {
-    adminApps: adminApps,
-    adminRoles: adminRoles
-  },
+  priority: 100,
   init: function(){
     return function(req){
       req.accessPolicies = ["defaultPolicy"];

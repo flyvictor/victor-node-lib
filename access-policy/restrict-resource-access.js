@@ -31,7 +31,7 @@ function generatePolicyQuery(policy, req){
 
 module.exports = {
   name: "restrict-resource-access",
-  config: {},
+  priority: 10,
   init: function(){
     return function(req){
       var uFilter = req.query.filter || {};

@@ -1,5 +1,4 @@
 var setPolicies = require("../../access-policy/set-access-policies");
-var testPolicies = require("./testPolicies");
 var access = require("../../access-policy");
 
 module.exports = function(){
@@ -8,7 +7,6 @@ module.exports = function(){
     var hook;
     before(function(){
       hook = setPolicies.init();
-      access.extendPolicies(testPolicies);
     });
     it("should be able to pick policies", function(){
       var req = {
@@ -58,7 +56,7 @@ module.exports = function(){
     it("should pick proper policy for admin user + non-admin app", function(){
       var req = {
         user: {
-          roles: ["Admin"]
+          roles: ["Administrators"]
         },
         clientApp: {
           authenticated: true,
