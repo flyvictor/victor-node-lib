@@ -45,13 +45,15 @@ module.exports = {
         restrictiveQuery.$or.push(generator(policies, p, req));
       });
       if (_.compact(errors).length !== 0){
-        console.log("Policies: ", errors.join(","), " are not defined");
+        console.log("Policies: ", _.compact(errors).join(","), " are not defined");
         res.send(500, "Internal server error");
         return false;
       }
-      req.query.filter = {
-        $and: [uFilter, restrictiveQuery]
-      };
+      if (restrictiveQuery.$or.length){
+        req.query.filter = {
+          $and: [uFilter, restrictiveQuery]
+        };
+      }
       return this;
     }
   }

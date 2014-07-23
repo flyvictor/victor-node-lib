@@ -128,5 +128,14 @@ module.exports = function(){
       req.query.filter.$and[1].$or[0].$or[0].$and[1].two.should.equal("userID");
       req.query.filter.$and[1].$or[0].$or[1].three.should.equal("userID");
     });
+    it("should pass request transparently if accessPolicies are not defined for request", function(){
+      var req = {
+        query: {
+          filter: {}
+        }
+      };
+      hook.call(null, req);
+      req.query.filter.should.be.empty;
+    });
   });
 };
