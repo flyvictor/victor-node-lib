@@ -24,26 +24,31 @@ function iterateLevel(skeleton, req){
 }
 
 function generatePolicyQuery(policies, policy, req){
-  var skeleton = policies[policy].query;
+  var skeleton = policies[policy].restriction;
   return iterateLevel(skeleton, req);
 }
 
 module.exports = {
   name: "restrict-resource-access",
-  priority: 10,
   config: {
-    policies: require("./index").policies,
+    policies: {},
     queryGenerator: generatePolicyQuery
   },
   init: function(options){
-    var policies = options.policies || require("./index").policies;
-    var generator = options.queryGenerator;
-    return function(req){
+    var policies = options.policies;
+    var generator = options.queryGenerator || generatePolicyQuery;
+    return function(req, res){
       var uFilter = req.query.filter || {};
       var restrictiveQuery = {$or: []};
-      _.each(req.accessPolicies, function(p){
+      var errors = _.map(req.accessPolicies, function(p){
+        if (!policies[p]) return p;
         restrictiveQuery.$or.push(generator(policies, p, req));
       });
+      if (_.compact(errors).length !== 0){
+        console.log("Policies: ", errors.join(","), " are not defined");
+        res.send(500, "Internal server error");
+        return false;
+      }
       req.query.filter = {
         $and: [uFilter, restrictiveQuery]
       };

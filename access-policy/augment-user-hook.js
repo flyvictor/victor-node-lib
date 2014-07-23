@@ -1,3 +1,4 @@
+var _ = require("underscore");
 /**
  * This thing is an init fn for fortune hook that can be used as express filter also
  */
@@ -28,7 +29,6 @@ exports.augmentUser = augmentUserConstructor;
 
 exports.hook = {
   name: "augment-user",
-  priority: 3,
   config: {},
   init: augmentUserConstructor
 };

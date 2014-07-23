@@ -2,11 +2,22 @@ var _ = require("underscore");
 var restrictHook = require("../../access-policy/restrict-resource-access");
 var access = require("../../access-policy");
 
+var policies = {
+    adminPolicy: {
+      restriction: {}
+    },
+    defaultPolicy: {
+      restriction: {
+        user: "@user.userId"
+      }
+    }
+};
+
 module.exports = function(){
   describe("Role-based access. Restrict access hook", function(){
     var hook;
     before(function(){
-      hook = restrictHook.init(restrictHook.config);
+      hook = restrictHook.init({policies: policies});
     });
     it("should be able to augment filter with policy restriction query", function(){
       var req = {
@@ -18,7 +29,7 @@ module.exports = function(){
         },
         accessPolicies: ["defaultPolicy"]
       };
-      hook.call(null, req);
+      hook.call(null, req, {});
       var filter = req.query.filter;
       filter.$and.length.should.equal(2);
       filter.$and[0].should.eql({});
@@ -68,7 +79,7 @@ module.exports = function(){
         user: {
           userId: "userID"
         },
-        accessPolicies: ["defaultPolicy", "readMyPolicy", "readAllPolicy"]
+        accessPolicies: ["defaultPolicy", "defaultPolicy", "adminPolicy"]
       };
       hook.call(null, req);
       var requestedFilter = req.query.filter.$and[0];
@@ -77,6 +88,21 @@ module.exports = function(){
       restrictiveFilter.$or[0].user.should.equal("userID");
       restrictiveFilter.$or[1].user.should.equal("userID");
       _.isEmpty(restrictiveFilter.$or[2]).should.equal(true);
+    });
+    it("should not allow access if required policy is not set on resource", function(){
+      var req = {
+        query: {},
+        user: {
+          userId: "userID"
+        },
+        accessPolicies: ["defaultPolicy", "blackhatPolicy", "adminPolicy"]
+      };
+      var res = {
+        send: function(){}
+      };
+      var self = {};
+      var result = hook.call(self, req, res);
+      result.should.equal(false);
     });
   });
 };

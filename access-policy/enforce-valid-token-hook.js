@@ -1,3 +1,5 @@
+var _ = require("underscore");
+
 var pathExecptionsMatches = function(list, path, method) {
   return _.find(list, function(pattern) {
     return path.match(pattern.path) && (!pattern.method || (method === pattern.method));
@@ -30,7 +32,6 @@ exports.enforceValidToken = enforceValidTokenConstructor;
 
 exports.hook = {
   name: 'enforce-valid-token',
-  priority: 4,
   config: {},
   init: enforceValidTokenConstructor
 };
