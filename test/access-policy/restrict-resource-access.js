@@ -10,6 +10,17 @@ var policies = {
       restriction: {
         user: "@user.userId"
       }
+    },
+    complexPolicy: {
+      restriction: {
+        $or: [
+          {$and: [
+            {one: "@user.userId"},
+            {two: "@user.userId"}
+          ]},
+          {three: "@user.userId"}
+        ]
+      }
     }
 };
 
@@ -103,6 +114,19 @@ module.exports = function(){
       var self = {};
       var result = hook.call(self, req, res);
       result.should.equal(false);
+    });
+    it("should play well with complex restriction query", function(){
+      var req = {
+        query: {},
+        user: {
+          userId: "userID"
+        },
+        accessPolicies: ["complexPolicy"]
+      };
+      hook.call(null, req);
+      req.query.filter.$and[1].$or[0].$or[0].$and[0].one.should.equal("userID");
+      req.query.filter.$and[1].$or[0].$or[0].$and[1].two.should.equal("userID");
+      req.query.filter.$and[1].$or[0].$or[1].three.should.equal("userID");
     });
   });
 };
