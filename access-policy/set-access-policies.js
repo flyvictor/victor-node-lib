@@ -1,13 +1,11 @@
 var _ = require("underscore");
-var adminApps = (process.env.ADMIN_APPS || "admin-frontend,legacy-application").split(",");
-var adminRoles = (process.env.ADMIN_USER_ROLES || "Administrators,OpsAdmin").split(",");
 
 module.exports = {
   name: "set-access-policies",
   config: {
     predicates: [],
-    adminRoles: adminRoles,
-    adminApps: adminApps
+    adminRoles: [],
+    adminApps: []
   },
   init: function(hookConfig){
     var predicates = hookConfig.predicates;
