@@ -1,7 +1,6 @@
-var setPolicies = require("../../access-policy/set-access-policies");
-var access = require("../../access-policy");
+var setPolicies = require("../../fortune-access/set-access-policies");
 
-var testPolicies = require("../../access-policy").policies;
+var testPolicies = require("./test-policies");
 
 module.exports = function(){
 

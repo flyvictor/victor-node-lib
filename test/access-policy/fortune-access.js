@@ -1,5 +1,5 @@
 var _ = require("lodash");
-var FortuneAccess = require("../../access-policy/fortune-access");
+var FortuneAccess = require("../../fortune-access");
 
 describe("FortuneAccess", function(){
   var access;
@@ -28,13 +28,12 @@ describe("FortuneAccess", function(){
       }
     };
     access.useC(function(){return function(){}});
+    access.use(function(){});
     access.setupHttpFilters(express);
     express.mw.length.should.equal(2);
   });
 
-  it("should be able to consume augmentor hooks and define highest priority on them", function(){
-
-  });
+  it("should be able to consume augmentor hooks and define highest priority on them");
 
   it("should throw if provided policy is invalid", function(){
     (function(){

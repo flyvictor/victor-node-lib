@@ -1,6 +1,5 @@
 var _ = require("underscore");
-var restrictHook = require("../../access-policy/restrict-resource-access");
-var access = require("../../access-policy");
+var restrictHook = require("../../fortune-access/restrict-resource-access");
 
 var policies = {
     adminPolicy: {

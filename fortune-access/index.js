@@ -20,18 +20,15 @@ FortuneAccess.prototype.useC = function(fn){
   this._middleware.push(fn.apply(null, _.toArray(arguments).slice(1)));
   return this;
 };
+FortuneAccess.prototype.use = function(fn){
+  this._middleware.push(fn);
+  return this;
+};
 
 FortuneAccess.prototype.setupHttpFilters = function(express){
   //Attach configured http security filters to the app.
   _.each(this._middleware, function(mw){
     express.use(mw);
-  });
-
-  //Intercept calls to /resources
-  express.use(function(req, res, next){
-    if (req.url !== '/resources') return next();
-    //TODO: something with that
-    next();
   });
   return this;
 };
@@ -56,17 +53,17 @@ FortuneAccess.prototype._setupHooks = function(app){
   _.each(app._resources, function(resource, name){
     var predicates = self._getPredicates(resource);
     app.beforeRW(name, [
-        _.extend(setAccessPolicies, {priority: self._priority--}),
-        _.extend(restrictResourceAccess, {priority: self._priority--})
-      ], {
-       "set-access-policies": {
-          predicates: predicates,
-          adminRoles: self._adminRoles,
-          adminApps: self._adminApps
-       },
-       "restrict-resource-access": {
-         policies: resource.policy
-       }
+      _.extend(setAccessPolicies, {priority: self._priority--}),
+      _.extend(restrictResourceAccess, {priority: self._priority--})
+    ], {
+      "set-access-policies": {
+        predicates: predicates,
+        adminRoles: self._adminRoles,
+        adminApps: self._adminApps
+      },
+      "restrict-resource-access": {
+        policies: resource.policy
+      }
     });
   });
 };
