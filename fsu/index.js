@@ -6,7 +6,7 @@ module.exports = {
     return _.filter(_.map(fs.readdirSync(dir), function(m){//map
       return dir + "/" + m;
     }), function(m){
-      return !except || (_.isArray(except) ? except.indexOf(m) !== -1 : m !== except);
+      return !except || (_.isArray(except) ? except.indexOf(m) === -1 : m !== except);
     });
   }
 };
