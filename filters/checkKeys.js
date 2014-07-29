@@ -17,32 +17,30 @@ var getKey = function(key){
 
 var checkKeys = function(req, res, next) {
   if(req.headers && req.headers["internal-request"]){
-    console.log("ignoring auth cause it's internal-request");
-    next();
+    console.warn("internal-request header to bypass security is depreciated.");
+  }
+
+  /*jshint camelcase: false */
+  var key = req.clientApp ? req.clientApp.authKey : null,
+    sig = req.clientApp ? req.clientApp.oauthSignature : null,
+    consumerSecret = getKey(key);
+
+  if(!consumerSecret){
+    console.error("checkKeys: invalid key " + key);
+    res.send(401);
   }
   else {
-    /*jshint camelcase: false */
-    var key = req.clientApp ? req.clientApp.authKey : null,
-      sig = req.clientApp ? req.clientApp.oauthSignature : null,
-      consumerSecret = getKey(key);
+    var hasValidSignature = requestSigner.validateRequest(req, sig, consumerSecret, null);
 
-    if(!consumerSecret){
-      console.error("checkKeys: invalid key " + key);
+    if(!hasValidSignature){
+      console.error("checkKeys request failed key check, rejecting as HTTP 401");
       res.send(401);
     }
+
     else {
-      var hasValidSignature = requestSigner.validateRequest(req, sig, consumerSecret, null);
-
-      if(!hasValidSignature){
-        console.error("checkKeys request failed key check, rejecting as HTTP 401");
-        res.send(401);
-      }
-
-      else {
-        req.clientApp = req.clientApp || {};
-        req.clientApp.authenticated = true;
-        next();
-      }
+      req.clientApp = req.clientApp || {};
+      req.clientApp.authenticated = true;
+      next();
     }
   }
 };
