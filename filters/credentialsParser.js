@@ -5,6 +5,9 @@ var getOAuthHeaders = function(request){
 		return;
 
 	var authHeader = request.headers.authorization;
+
+  console.log("authHeader", authHeader);
+
 	var result = {};
 	_.each(authHeader.replace(/^OAuth/, "").split(/[, ]/), function(val){
 	    if(val){
@@ -14,6 +17,8 @@ var getOAuthHeaders = function(request){
 	      }
 	    }
 	  });
+
+  console.log("result", result);
 
 	return result;
 
@@ -32,6 +37,8 @@ var credentialsParser = function(req, res, next) {
   req.user = {
     authToken : _.result(req.headers, "userauthtoken") || _.result(req.query, "userAuthToken")
   };
+
+  console.log("req.clientApp", req.clientApp);
 
   next();
 };
