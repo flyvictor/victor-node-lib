@@ -71,7 +71,11 @@ var signRequest = function(request, consumerSecret, oAuthTokenSecret){
 var validateRequest = function(request, signature, consumerSecret, oAuthTokenSecret){
 	/*jshint camelcase: false */
 	var expectedSignature = signRequest(request, consumerSecret, oAuthTokenSecret);
-	 console.log("validate request, expected signature : %s, passed signature: %s", expectedSignature, signature);
+	 console.log("validate request, expected signature : %s, passed signature: %s",
+               expectedSignature,
+               Rfc3986.decode(signature),
+               "match:",
+               expectedSignature === Rfc3986.decode(signature));
 	return expectedSignature === Rfc3986.decode(signature);
 };
 
