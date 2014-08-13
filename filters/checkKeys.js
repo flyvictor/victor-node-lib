@@ -3,15 +3,17 @@ var _ = require("underscore"),
 
 var getKey = function(key){
   if (!key) return false;
-  
+  console.log("client keys", process.env.CLIENT_KEYS);
   var keyPairs = process.env.CLIENT_KEYS || "legacy-application:kfJyFWwUB3ZXNr0KC!vRz$;admin-frontend:3BckWpCNwqSGdD9g*nZDN;";
   var result;
   _.each(keyPairs.split(";"), function(val){
     if(val){
       var pair = val.split(":");
+      console.log("comparing", pair[0], key, (pair[0] === key));
       if(pair[0] === key) result = pair[1];
     }
   });
+  console.log("found:", result);
   return result;
 };
 
@@ -26,6 +28,7 @@ var checkKeys = function(req, res, next) {
       sig = req.clientApp ? req.clientApp.oauthSignature : null,
       consumerSecret = getKey(key);
 
+    console.log("consumerSecret:", consumerSecret);
     if(!consumerSecret){
       console.error("checkKeys: invalid key " + key);
       res.send(401);
